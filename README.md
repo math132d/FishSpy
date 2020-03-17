@@ -1,6 +1,6 @@
 # Fish (and crabs) Spy
 
-Put anything in `/vids/frames` you want to try it on. Or just use the ones already in there.
+Put anything in `/vid/frames` you want to try it on. Or just use the ones already in there.
 
 ## Status
 
