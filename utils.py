@@ -6,6 +6,12 @@ from skimage.measure import compare_ssim
 import cv2
 import numpy as np
 
+def load_images(path1, path2):
+    return (
+        cv2.equalizeHist(cv2.imread(path1, cv2.IMREAD_GRAYSCALE)),
+        cv2.equalizeHist(cv2.imread(path2, cv2.IMREAD_GRAYSCALE))
+    )
+
 def files_from(folder):
     #Returns sorted list of files in the defined folder
     return sorted(list(filter(
@@ -14,22 +20,20 @@ def files_from(folder):
     )))
 
 def mean_squared_error(path1, path2):
-    image1 = cv2.cvtColor(cv2.imread(path1), cv2.COLOR_BGR2GRAY)
-    image2 = cv2.cvtColor(cv2.imread(path2), cv2.COLOR_BGR2GRAY)
+    (image1, image2) = load_images(path1, path2)
 
     err = np.sum((image1.astype("float")-image2.astype("float")) ** 2)
     return err / (image1.shape[0] * image1.shape[1])
 
 def psnr(path1, path2):
     mse = mean_squared_error(path1, path2)
-
     return 20*math.log10(255) - np.log10(mse)
 
 def ssim(path1, path2):
-    image1 = cv2.cvtColor(cv2.imread(path1), cv2.COLOR_BGR2GRAY)
-    image2 = cv2.cvtColor(cv2.imread(path2), cv2.COLOR_BGR2GRAY)
-
+    (image1, image2) = load_images(path1, path2)
     (score, _) = compare_ssim(image1, image2, full=True)
+
+    cv2.imshow("asd", image1)
 
     #Inverse because SSIM is usually made for evaluating compression artifacts,
     #meaning differences are bad
