@@ -13,7 +13,7 @@ GM = GaussianMixture(n_components=2)
 
 print("Looking for frames in: " + FRAMES_PATH)
 for idx in range(len(FRAMES_LIST)-1):
-    mean_error = utils.mean_squared_error(
+    mean_error = utils.ssim( #Change this function to change how the difference is calculated
         path.join(FRAMES_PATH, FRAMES_LIST[idx-1]),
         path.join(FRAMES_PATH, FRAMES_LIST[idx])
     )
@@ -32,9 +32,9 @@ GM.fit(MSE_LIST)
 
 # print(ANOMALTIES)
 
-plt.figure(figsize=(8,6))
+plt.figure(figsize=(8, 6))
 #Plot MSE difference
-plt.scatter(range(len(MSE_LIST)), MSE_LIST,c=GM.predict_proba(MSE_LIST)[:,1], marker="x")
+plt.scatter(range(len(MSE_LIST)), MSE_LIST, c=GM.predict_proba(MSE_LIST)[:, 1], marker="x")
 #Plot probability
 #plt.scatter(range(len(MSE_LIST)), GM.predict_proba(MSE_LIST)[:,1], marker="x")
 plt.show()
