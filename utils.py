@@ -6,6 +6,12 @@ from skimage.measure import compare_ssim
 import cv2
 import numpy as np
 
+from TimeSlice import TimeSlice
+
+#
+#   FILE SYSTEM UTILS
+#
+
 def load_images(path1, path2):
     return (
         cv2.equalizeHist(cv2.imread(path1, cv2.IMREAD_GRAYSCALE)),
@@ -18,6 +24,33 @@ def files_from(folder):
         lambda file: path.isfile(path.join(folder, file)),
         listdir(folder)
     )))
+
+#
+#   TIME RELATED FUNCTIONS
+#
+
+def get_time_slices(framelist, fps):
+    #   Returns a list of TimeSlices.
+    #   'framelist' is a sorted list of anormal frames.
+    #   'fps' is how many fps were sampled from the original video
+
+    framerate = 25/fps
+    time_slices = []
+    last_frame = -1
+
+    for this_frame in framelist:
+        if last_frame < 0:
+            last_frame = this_frame
+
+        if this_frame-last_frame > (framerate * 3):
+            time_slices.append(TimeSlice(last_frame * framerate, this_frame * framerate))
+            last_frame = -1 #Make sure the next frame gets assigned to 'last_frame'
+
+    return time_slices
+
+#
+#   FRAME DIFFERENCE FUNCTIONS
+#
 
 def mean_squared_error(path1, path2):
     (image1, image2) = load_images(path1, path2)
