@@ -13,13 +13,6 @@ FRAMES_LIST = utils.files_from(FRAMES_PATH)
 MSE_LIST = []
 GM = GaussianMixture(n_components=2)
 
-test_img = utils.detect_edges(utils.load_images(
-    path.join(FRAMES_PATH, FRAMES_LIST[0]),
-    path.join(FRAMES_PATH, FRAMES_LIST[1])    
-))
-
-cv2.imshow("TestImage", test_img[0]);
-
 print("Looking for frames in: " + FRAMES_PATH)
 for idx in range(1, len(FRAMES_LIST)):
     mean_error = utils.mean_squared_error( #Change this function to change how the difference is calculated
