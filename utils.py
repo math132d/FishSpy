@@ -14,8 +14,14 @@ from TimeSlice import TimeSlice
 
 def load_images(path1, path2):
     return (
-        cv2.equalizeHist(cv2.imread(path1, cv2.IMREAD_GRAYSCALE)),
-        cv2.equalizeHist(cv2.imread(path2, cv2.IMREAD_GRAYSCALE))
+        cv2.imread(path1, cv2.IMREAD_GRAYSCALE),
+        cv2.imread(path2, cv2.IMREAD_GRAYSCALE)
+    )
+
+def detect_edges(image_tuple):
+    return (
+        cv2.Laplacian(image_tuple[0], -1),
+        cv2.Laplacian(image_tuple[1], -1)
     )
 
 def files_from(folder):
@@ -34,7 +40,7 @@ def get_time_slices(framelist, fps):
     #   'framelist' is a sorted list of anormal frames.
     #   'fps' is how many fps were sampled from the original video
 
-    framerate = 25/fps
+    frametime = 1000/fps
     time_slices = []
     last_frame = -1
 
@@ -42,8 +48,16 @@ def get_time_slices(framelist, fps):
         if last_frame < 0:
             last_frame = this_frame
 
-        if this_frame-last_frame > (framerate * 3):
-            time_slices.append(TimeSlice(last_frame * framerate, this_frame * framerate))
+        delta_frame = this_frame-last_frame
+
+        if delta_frame > 25:
+            time_slices.append(
+                TimeSlice(
+                    last_frame * frametime,
+                    (this_frame-last_frame) * frametime
+                )
+            )
+
             last_frame = -1 #Make sure the next frame gets assigned to 'last_frame'
 
     return time_slices
@@ -60,13 +74,15 @@ def mean_squared_error(path1, path2):
 
 def psnr(path1, path2):
     mse = mean_squared_error(path1, path2)
-    return 20*math.log10(255) - np.log10(mse)
+
+    if mse == 0:
+        return (20*math.log10(255))
+    else:
+        return (20*math.log10(255) - 10*np.log10(mse))
 
 def ssim(path1, path2):
     (image1, image2) = load_images(path1, path2)
     (score, _) = compare_ssim(image1, image2, full=True)
-
-    cv2.imshow("asd", image1)
 
     #Inverse because SSIM is usually made for evaluating compression artifacts,
     #meaning differences are bad
