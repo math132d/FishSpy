@@ -67,7 +67,7 @@ def get_time_slices(framelist, fps):
 #
 
 def mean_squared_error(path1, path2):
-    (image1, image2) = load_images(path1, path2)
+    (image1, image2) = detect_edges(load_images(path1, path2))
 
     err = np.sum((image1.astype("float")-image2.astype("float")) ** 2)
     return err / (image1.shape[0] * image1.shape[1])
@@ -81,9 +81,9 @@ def psnr(path1, path2):
         return (20*math.log10(255) - 10*np.log10(mse))
 
 def ssim(path1, path2):
-    (image1, image2) = load_images(path1, path2)
+    (image1, image2) = detect_edges(load_images(path1, path2))
     (score, _) = compare_ssim(image1, image2, full=True)
 
-    #Inverse because SSIM is usually made for evaluating compression artifacts,
-    #meaning differences are bad
-    return 1.0/score
+    #Convert to dissimilarity since we are more interested if there is a difference
+    #rather than then images being similar.
+    return (1-score) / 2
