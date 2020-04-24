@@ -4,6 +4,7 @@ from sklearn.mixture import GaussianMixture
 from TimeSlice import TimeSlice
 
 import matplotlib.pyplot as plt
+import numpy as np
 import cv2
 import utils
 
@@ -27,7 +28,7 @@ GM.fit(MSE_LIST)
 
 MSE_LIST_PROBA = enumerate(GM.predict_proba(MSE_LIST)[:, 1])
 
-ANOMALIES = list(
+ANOMS = list(
     map(
         lambda anomal: anomal[0],
         filter(
@@ -37,30 +38,34 @@ ANOMALIES = list(
     )
 )
 
-time_slices = sorted(utils.get_time_slices(ANOMALIES, 25), key=lambda x: x.duration);
+ANOMS = sorted(ANOMS)
 
-for sl in time_slices:
-    print(sl.get_timestamp())
+print(ANOMS)
 
-# ANOMALTIES = sorted(
-#     MSE_LIST_PROBA,
-#     key=lambda x: x[1],
-#     reverse=True
-# )
+ANOMS = utils.filter_frames(ANOMS, 13)
 
-# for anom in ANOMALTIES:
-#     if anom[1] < 0.8:
-#         break
+print(ANOMS)
 
-#     print(anom[0])
+ANOMS_VECTOR = np.zeros(np.max(ANOMS), np.uint8)
 
-fig, ax_diff = plt.subplots()
+for ANOM in ANOMS:
+    ANOMS_VECTOR[ANOM-1] = 1
 
-ax_diff.scatter(range(len(MSE_LIST)), MSE_LIST, c=GM.predict_proba(MSE_LIST)[:, 1], marker="x")
+time_slices = utils.get_time_slices(ANOMS, 25, 25)
 
-ax_proba = ax_diff.twinx()
+for s in time_slices:
+    print(s.get_timestamp())
 
-ax_proba.scatter(range(len(MSE_LIST)), GM.predict_proba(MSE_LIST)[:, 1], marker="x")
-
-fig.tight_layout()
+plt.plot(range(len(ANOMS_VECTOR)), ANOMS_VECTOR, 'x')
 plt.show()
+
+# fig, ax_diff = plt.subplots()
+
+# ax_diff.scatter(range(len(MSE_LIST)), MSE_LIST, c=GM.predict_proba(MSE_LIST)[:, 1], marker="x")
+
+# ax_proba = ax_diff.twinx()
+
+# ax_proba.scatter(range(len(MSE_LIST)), GM.predict_proba(MSE_LIST)[:, 1], marker="o")
+
+# fig.tight_layout()
+# plt.show()
