@@ -35,30 +35,38 @@ def files_from(folder):
 #   TIME RELATED FUNCTIONS
 #
 
-def get_time_slices(framelist, fps):
+def get_time_slices(framelist, fps, threshold):
     #   Returns a list of TimeSlices.
     #   'framelist' is a sorted list of anormal frames.
     #   'fps' is how many fps were sampled from the original video
+    #   'threshold' determins how many empty frames before cutting the clip
 
+    framelist.reverse() #reverse because we are pop-ing, and want to start from the front
+
+    min_delta = threshold
     frametime = 1000/fps
     time_slices = []
-    last_frame = -1
 
-    for this_frame in framelist:
-        if last_frame < 0:
-            last_frame = this_frame
+    legal_delta = min_delta
+    start_frame = framelist.pop()
 
-        delta_frame = this_frame-last_frame
+    while len(framelist) > 0:
+        next_frame = framelist.pop()
+        delta_frame = next_frame-start_frame
 
-        if delta_frame > 25:
+        if delta_frame > legal_delta or len(framelist) == 0:
             time_slices.append(
                 TimeSlice(
-                    last_frame * frametime,
-                    (this_frame-last_frame) * frametime
+                    #Adding 'threshold' frames padding either side of the slice
+                    (start_frame - threshold) * frametime,
+                    (start_frame + threshold) + legal_delta * frametime
                 )
             )
-
-            last_frame = -1 #Make sure the next frame gets assigned to 'last_frame'
+            #Reset values for next slice
+            start_frame = next_frame
+            legal_delta = min_delta
+        else:
+            legal_delta = min_delta + delta_frame
 
     return time_slices
 
