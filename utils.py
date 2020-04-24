@@ -62,6 +62,19 @@ def get_time_slices(framelist, fps):
 
     return time_slices
 
+def filter_frames(frames, threshold):
+    #Removes frames with no neighbours within the given threshold.
+
+    new_frames = []
+
+    for idx in range(1, len(frames)-1):
+        space = frames[idx+1] - frames[idx-1]
+
+        if space <= threshold :
+            new_frames.append(frames[idx])
+    
+    return new_frames
+
 #
 #   FRAME DIFFERENCE FUNCTIONS
 #
