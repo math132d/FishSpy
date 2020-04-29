@@ -16,13 +16,14 @@ GM = GaussianMixture(n_components=2)
 
 print("Looking for frames in: " + FRAMES_PATH)
 for idx in range(1, len(FRAMES_LIST)):
-    mean_error = utils.mean_squared_error( #Change this function to change how the difference is calculated
+    #Change this function to change how the difference is calculated
+    diff = utils.optical_flow_field(
         path.join(FRAMES_PATH, FRAMES_LIST[idx-1]),
         path.join(FRAMES_PATH, FRAMES_LIST[idx])
     )
 
     #Append as 1-element arrays since GM expects a 2D array
-    MSE_LIST.append([mean_error])
+    MSE_LIST.append([diff[0], diff[1]])
 
 GM.fit(MSE_LIST)
 

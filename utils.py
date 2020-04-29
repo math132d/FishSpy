@@ -108,3 +108,14 @@ def ssim(path1, path2):
     #Convert to dissimilarity since we are more interested if there is a difference
     #rather than then images being similar.
     return (1-score) / 2
+
+def optical_flow_field(path1, path2):
+    (image1, image2) = load_images(path1, path2)
+
+    flow = cv2.calcOpticalFlowFarneback(image1, image2, None, 0.5, 3, 5, 3, 5, 1.2, 0)
+    magnitude, angle = cv2.cartToPolar(flow[..., 0], flow[..., 1])
+
+    avg_magnitude = np.average(magnitude)
+    avg_angle = np.average(angle)
+
+    return (avg_magnitude, avg_angle)
