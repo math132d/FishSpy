@@ -80,38 +80,33 @@ def filter_frames(frames, threshold):
 
         if space <= threshold :
             new_frames.append(frames[idx])
-    
+
     return new_frames
 
 #
 #   FRAME DIFFERENCE FUNCTIONS
 #
 
-def mean_squared_error(path1, path2):
-    (image1, image2) = detect_edges(load_images(path1, path2))
-
+def mean_squared_error(image1, image2):
     err = np.sum((image1.astype("float")-image2.astype("float")) ** 2)
     return err / (image1.shape[0] * image1.shape[1])
 
-def psnr(path1, path2):
-    mse = mean_squared_error(path1, path2)
+def psnr(image1, image2):
+    mse = mean_squared_error(image1, image2)
 
     if mse == 0:
         return (20*math.log10(255))
     else:
         return (20*math.log10(255) - 10*np.log10(mse))
 
-def ssim(path1, path2):
-    (image1, image2) = detect_edges(load_images(path1, path2))
+def ssim(image1, image2):
     (score, _) = compare_ssim(image1, image2, full=True)
 
     #Convert to dissimilarity since we are more interested if there is a difference
     #rather than then images being similar.
     return (1-score) / 2
 
-def optical_flow_field(path1, path2):
-    (image1, image2) = load_images(path1, path2)
-
+def optical_flow_field(image1, image2):
     flow = cv2.calcOpticalFlowFarneback(image1, image2, None, 0.5, 3, 5, 3, 5, 1.2, 0)
     magnitude, angle = cv2.cartToPolar(flow[..., 0], flow[..., 1])
 
