@@ -17,3 +17,12 @@ class TimeSlice:
         end = timedelta(milliseconds=self.end())
 
         return "[{} -> {}]".format(str(start), str(end))
+
+    def intersection_over_union(self, other):
+        intersection = min(self.end(), other.end()) - max(self.start, other.start)
+        union = max(self.end(), other.end()) - min(self.start, other.start)
+
+        print(max(self.end(), other.end()))
+        print(str(union))
+
+        return intersection / union
