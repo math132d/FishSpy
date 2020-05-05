@@ -118,7 +118,7 @@ def ssim(image1, image2):
     return [(1-score) / 2]
 
 def optical_flow_field(image1, image2):
-    flow = cv2.calcOpticalFlowFarneback(image1, image2, None, 0.5, 3, 5, 3, 5, 1.2, 0)
+    flow = cv2.calcOpticalFlowFarneback(image1, image2, None, 0.5, 3, 5, 3, 7, 1.5, 0)
     magnitude, angle = cv2.cartToPolar(flow[..., 0], flow[..., 1])
 
     avg_magnitude = np.average(magnitude)
