@@ -1,15 +1,12 @@
-from sklearn.mixture import GaussianMixture
-
 import cv2
 import utils
 
-def train(path):
-    GM = GaussianMixture(n_components=2)
+def get_anomalies(gm_model, path, threshold):
     FRAMEBUFFER = cv2.VideoCapture(path)
     FEATURES = []
 
     if not FRAMEBUFFER.isOpened():
-        print('Failed to open video file')
+        print('Failed to open path: ' + str(path))
 
     _ret, prev_frame = FRAMEBUFFER.read()
     _ret, curr_frame = FRAMEBUFFER.read()
@@ -30,7 +27,18 @@ def train(path):
 
         FEATURES.append([feature])
 
-    FRAMEBUFFER.release()
-    GM.fit(FEATURES)
+    FEATURES_PROBA = enumerate(
+        gm_model.predict_proba(FEATURES)[:, 1]
+    )
 
-    return GM
+    anomalies = list(
+        map(
+            lambda anomaly: anomaly[0],
+            filter(
+                lambda anomaly_proba: anomaly_proba[1] >= threshold,
+                FEATURES_PROBA
+            )
+        )
+    )
+
+    return sorted(anomalies)
