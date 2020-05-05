@@ -1,4 +1,5 @@
 import cv2
+import utils
 
 def get_anomalies(gm_model, path, feature_function, threshold):
     framebuffer = cv2.VideoCapture(path)
@@ -7,8 +8,8 @@ def get_anomalies(gm_model, path, feature_function, threshold):
     if not framebuffer.isOpened():
         print('Failed to open path: ' + str(path))
 
-    _ret, prev_frame = framebuffer.read()
-    _ret, curr_frame = framebuffer.read()
+    _ret, prev_frame = utils.read_grayscale(framebuffer)
+    _ret, curr_frame = utils.read_grayscale(framebuffer)
 
     while framebuffer.isOpened():
 
@@ -22,7 +23,7 @@ def get_anomalies(gm_model, path, feature_function, threshold):
         )
 
         prev_frame = curr_frame
-        _ret, curr_frame = framebuffer.read()
+        _ret, curr_frame = utils.read_grayscale(framebuffer)
 
         features.append([feature])
 

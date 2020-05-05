@@ -6,9 +6,9 @@ from anomalies import get_anomalies
 
 import utils
 
-GM = train('./vid/train_01.mp4')
+GM = train('./vid/train_01_sm.mp4', utils.optical_flow_field)
 
-ANOMS = get_anomalies(GM, './vid/train_01.mp4', 0.98)
+ANOMS = get_anomalies(GM, './vid/train_01_sm.mp4', utils.optical_flow_field, 0.98)
 
 ANOMS = utils.filter_frames(ANOMS, 13)
 

@@ -1,5 +1,7 @@
 from sklearn.mixture import GaussianMixture
+
 import cv2
+import utils
 
 def train(path, feature_function):
     gm = GaussianMixture(n_components=2)
@@ -9,8 +11,8 @@ def train(path, feature_function):
     if not framebuffer.isOpened():
         print('Failed to open video file')
 
-    _ret, prev_frame = framebuffer.read()
-    _ret, curr_frame = framebuffer.read()
+    _ret, prev_frame = utils.read_grayscale(framebuffer)
+    _ret, curr_frame = utils.read_grayscale(framebuffer)
 
     while framebuffer.isOpened():
 
@@ -24,9 +26,9 @@ def train(path, feature_function):
         )
 
         prev_frame = curr_frame
-        _ret, curr_frame = framebuffer.read()
+        _ret, curr_frame = utils.read_grayscale(framebuffer)
 
-        features.append([feature])
+        features.append(feature)
 
     framebuffer.release()
     gm.fit(features)

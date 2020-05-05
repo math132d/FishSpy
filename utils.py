@@ -18,6 +18,17 @@ def load_images(path1, path2):
         cv2.imread(path2, cv2.IMREAD_GRAYSCALE)
     )
 
+def read_grayscale(framebuffer):
+    ref, img = framebuffer.read()
+
+    if not ref:
+        return ref, None
+
+    return (
+        ref,
+        cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    )
+
 def detect_edges(image_tuple):
     return (
         cv2.Laplacian(image_tuple[0], -1),
@@ -113,4 +124,4 @@ def optical_flow_field(image1, image2):
     avg_magnitude = np.average(magnitude)
     avg_angle = np.average(angle)
 
-    return (avg_magnitude, avg_angle)
+    return [avg_magnitude, avg_angle]
