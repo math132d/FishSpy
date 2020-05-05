@@ -1,4 +1,4 @@
-def evaluate_iou(ground_truth, inferred, threshold) {
+def evaluate_iou(ground_truth, inferred, threshold):
     tp = 0
     fp = 0
     fn = 0
@@ -7,19 +7,20 @@ def evaluate_iou(ground_truth, inferred, threshold) {
         iou = 0
 
         for truth_slice in ground_truth:
-            iou = inferred_slice.intersection_over_union(ground_truth)
+            iou = inferred_slice.intersection_over_union(truth_slice)
 
-            if(iou >= threshold):
+            if iou >= threshold:
                 tp += 1
-                break;
-
-        if(iou == 0):
+                break
+        
+        print(iou)
+        
+        if iou == 0:
             fp += 1
 
-    fn = len(ground_truth) - tp;
+    fn = len(ground_truth) - tp
 
     precision = tp / (tp + fp)
-    recall = tp / (tp + tn)
+    recall = tp / (tp + fn)
 
     return (tp, fp, fn, precision, recall)
-}
