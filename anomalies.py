@@ -25,7 +25,7 @@ def get_anomalies(gm_model, path, feature_function, threshold):
         prev_frame = curr_frame
         _ret, curr_frame = utils.read_grayscale(framebuffer)
 
-        features.append([feature])
+        features.append(feature)
 
     features_proba = enumerate(
         gm_model.predict_proba(features)[:, 1]
