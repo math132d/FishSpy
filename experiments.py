@@ -1,5 +1,5 @@
 from os import path
-from skimage.measure import compare_ssim
+import matplotlib.pyplot as plt
 
 import cv2
 import numpy as np
@@ -9,32 +9,37 @@ import utils
 FRAMES_PATH = path.abspath("./vid/frames/")
 FRAMES_LIST = utils.files_from(FRAMES_PATH)
 
-for idx in range(len(FRAMES_LIST)):
-    (IMG1, IMG2) = utils.load_images(
-        path.join(FRAMES_PATH, FRAMES_LIST[idx+1]),
-        path.join(FRAMES_PATH, FRAMES_LIST[idx])
+magnitudes = []
+angles = []
+
+for idx in range(len(FRAMES_LIST)-1):
+    (prev_img, next_img) = utils.load_images(
+        path.join(FRAMES_PATH, FRAMES_LIST[idx]),
+        path.join(FRAMES_PATH, FRAMES_LIST[idx+1])
     )
 
-    (IMG1_ALT, IMG2_ALT) = utils.detect_edges((IMG1, IMG2))
+    flow = cv2.calcOpticalFlowFarneback(prev_img, next_img, None, 0.5, 3, 5, 3, 5, 1.2, 0)
+    magnitude, angle = cv2.cartToPolar(flow[..., 0], flow[..., 1])
 
-    # _, IMG1_ALT = cv2.threshold(IMG1_ALT, 15, 255, cv2.THRESH_BINARY)
-    # _, IMG2_ALT = cv2.threshold(IMG2_ALT, 15, 255, cv2.THRESH_BINARY)
+    magnitudes.append(np.average(magnitude))
+    angles.append(np.average(angle))
 
-    # DISP = np.vstack((
-    #         np.hstack((IMG1, IMG2)),
-    #         np.hstack((IMG1_ALT, IMG2_ALT))
-    #     ))
+    # mask = np.zeros((
+    #     prev_img.shape[0],
+    #     prev_img.shape[1],
+    #     3
+    # ), np.float32)
 
-    DIFF = cv2.subtract(IMG1, IMG2)
-    DIFF_ALT = cv2.subtract(IMG1_ALT, IMG2_ALT)
-    (_, DIFF_SSIM) = compare_ssim(IMG1, IMG2, full=True)
+    # np.average()
 
-    _, DIFF = cv2.threshold(DIFF, 10, 255, cv2.THRESH_BINARY)
-    _, DIFF_EDGE = cv2.threshold(DIFF_ALT, 10, 255, cv2.THRESH_BINARY)
+    # #Setting the hue to be the direction of movement
+    # mask[..., 0] = angle*180 / np.pi / 2
+    # #Setting saturation to 100%
+    # mask[..., 1] = 255
+    # #Setting the value to be the magnitude of movement
+    # mask[..., 2] = cv2.normalize(magnitude, None, 0, 255, cv2.NORM_L1)
 
-    DIFFF = np.hstack((DIFF, DIFF_SSIM))
-
-    # cv2.imshow("Display",  DISP)
-    # cv2.waitKey(0)
-    cv2.imshow("Display", DIFFF)
-    cv2.waitKey(0)
+plt.scatter(magnitudes, angles, c=range(len(angles)), marker="o")
+plt.ylabel("Angle")
+plt.xlabel("Magnitude")
+plt.show()

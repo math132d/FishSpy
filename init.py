@@ -16,14 +16,17 @@ GM = GaussianMixture(n_components=2)
 
 print("Looking for frames in: " + FRAMES_PATH)
 for idx in range(1, len(FRAMES_LIST)):
-    #Change this function to change how the difference is calculated
-    diff = utils.optical_flow_field(
+
+    image1, image2 = utils.load_images(
         path.join(FRAMES_PATH, FRAMES_LIST[idx-1]),
-        path.join(FRAMES_PATH, FRAMES_LIST[idx])
+        path.join(FRAMES_PATH, FRAMES_LIST[idx])    
     )
 
+    #Change this function to change how the difference is calculated
+    change = utils.optical_flow_field( image1, image2 )
+
     #Append as 1-element arrays since GM expects a 2D array
-    MSE_LIST.append([diff[0], diff[1]])
+    MSE_LIST.append([change[0], change[1]])
 
 GM.fit(MSE_LIST)
 
@@ -33,7 +36,7 @@ ANOMS = list(
     map(
         lambda anomal: anomal[0],
         filter(
-            lambda anomal_proba: anomal_proba[1] >= 0.98,
+            lambda anomal_proba: anomal_proba[1] >= 0.8,
             MSE_LIST_PROBA
         )
     )
@@ -59,14 +62,3 @@ for s in time_slices:
 
 plt.plot(range(len(ANOMS_VECTOR)), ANOMS_VECTOR, 'x')
 plt.show()
-
-# fig, ax_diff = plt.subplots()
-
-# ax_diff.scatter(range(len(MSE_LIST)), MSE_LIST, c=GM.predict_proba(MSE_LIST)[:, 1], marker="x")
-
-# ax_proba = ax_diff.twinx()
-
-# ax_proba.scatter(range(len(MSE_LIST)), GM.predict_proba(MSE_LIST)[:, 1], marker="o")
-
-# fig.tight_layout()
-# plt.show()

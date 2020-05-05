@@ -35,4 +35,4 @@ GM.fit(FEATURES)
 params = GM.get_params(deep=True)
 
 with open('./params.json', 'w') as output:
-    json.dump(str(params), output)
+    json.dump(params, output)
