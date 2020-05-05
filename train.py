@@ -1,36 +1,34 @@
 from sklearn.mixture import GaussianMixture
-
 import cv2
-import utils
 
-def train(path):
-    GM = GaussianMixture(n_components=2)
-    FRAMEBUFFER = cv2.VideoCapture(path)
-    FEATURES = []
+def train(path, feature_function):
+    gm = GaussianMixture(n_components=2)
+    framebuffer = cv2.VideoCapture(path)
+    features = []
 
-    if not FRAMEBUFFER.isOpened():
+    if not framebuffer.isOpened():
         print('Failed to open video file')
 
-    _ret, prev_frame = FRAMEBUFFER.read()
-    _ret, curr_frame = FRAMEBUFFER.read()
+    _ret, prev_frame = framebuffer.read()
+    _ret, curr_frame = framebuffer.read()
 
-    while FRAMEBUFFER.isOpened():
+    while framebuffer.isOpened():
 
-        if _ret == False:
+        if not _ret:
             print('Reached end of file')
             break
 
-        feature = utils.mean_squared_error(
+        feature = feature_function(
             prev_frame,
             curr_frame
         )
 
         prev_frame = curr_frame
-        _ret, curr_frame = FRAMEBUFFER.read()
+        _ret, curr_frame = framebuffer.read()
 
-        FEATURES.append([feature])
+        features.append([feature])
 
-    FRAMEBUFFER.release()
-    GM.fit(FEATURES)
+    framebuffer.release()
+    gm.fit(features)
 
-    return GM
+    return gm

@@ -1,34 +1,33 @@
 import cv2
-import utils
 
-def get_anomalies(gm_model, path, threshold):
-    FRAMEBUFFER = cv2.VideoCapture(path)
-    FEATURES = []
+def get_anomalies(gm_model, path, feature_function, threshold):
+    framebuffer = cv2.VideoCapture(path)
+    features = []
 
-    if not FRAMEBUFFER.isOpened():
+    if not framebuffer.isOpened():
         print('Failed to open path: ' + str(path))
 
-    _ret, prev_frame = FRAMEBUFFER.read()
-    _ret, curr_frame = FRAMEBUFFER.read()
+    _ret, prev_frame = framebuffer.read()
+    _ret, curr_frame = framebuffer.read()
 
-    while FRAMEBUFFER.isOpened():
+    while framebuffer.isOpened():
 
-        if _ret == False:
+        if not _ret:
             print('Reached end of file')
             break
 
-        feature = utils.mean_squared_error(
+        feature = feature_function(
             prev_frame,
             curr_frame
         )
 
         prev_frame = curr_frame
-        _ret, curr_frame = FRAMEBUFFER.read()
+        _ret, curr_frame = framebuffer.read()
 
-        FEATURES.append([feature])
+        features.append([feature])
 
-    FEATURES_PROBA = enumerate(
-        gm_model.predict_proba(FEATURES)[:, 1]
+    features_proba = enumerate(
+        gm_model.predict_proba(features)[:, 1]
     )
 
     anomalies = list(
@@ -36,7 +35,7 @@ def get_anomalies(gm_model, path, threshold):
             lambda anomaly: anomaly[0],
             filter(
                 lambda anomaly_proba: anomaly_proba[1] >= threshold,
-                FEATURES_PROBA
+                features_proba
             )
         )
     )
