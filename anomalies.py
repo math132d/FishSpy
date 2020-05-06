@@ -1,7 +1,7 @@
 import cv2
 import utils
 
-def get_anomalies(gm_model, path, feature_function, threshold):
+def get_anomalies(gm_model, path, feature_function):
     framebuffer = cv2.VideoCapture(path)
     features = []
 
@@ -31,14 +31,4 @@ def get_anomalies(gm_model, path, feature_function, threshold):
         gm_model.predict_proba(features)[:, 1]
     )
 
-    anomalies = list(
-        map(
-            lambda anomaly: anomaly[0],
-            filter(
-                lambda anomaly_proba: anomaly_proba[1] >= threshold,
-                features_proba
-            )
-        )
-    )
-
-    return sorted(anomalies)
+    return features_proba

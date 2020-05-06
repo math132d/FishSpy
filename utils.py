@@ -125,3 +125,21 @@ def optical_flow_field(image1, image2):
     avg_angle = np.average(angle)
 
     return [avg_magnitude, avg_angle]
+
+#
+#   EVAL
+#
+
+def anoms_to_timeslice(features_proba, threshold):
+    anomalies = list(
+        map(
+            lambda anomaly: anomaly[0],
+            filter(
+                lambda anomaly_proba: anomaly_proba[1] >= threshold,
+                features_proba
+            )
+        )
+    )
+
+    anomalies = filter_frames(anomalies, 13)
+    return get_time_slices(anomalies, 25, 25)
