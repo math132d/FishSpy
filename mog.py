@@ -39,13 +39,20 @@ while framebuffer.isOpened():
     for contour in contours:
         contourtracker.add_contour(contour, frame)
 
-    # if(frame in [2079, 3355, 3221, 2903, 1490]):
-    #     cv2.waitKey(0)
-    #     ctr_img = contourtracker.draw_countours(curr_frame, frame)
-    #     cv2.imshow("frame", ctr_img)
+framebuffer = cv2.VideoCapture(path)
+frame=0
 
-    # curr_frame[:,:,2] = curr_frame[:,:,2] * 0.5 + (fg * 0.5)
-    # cv2.imshow("Frame", curr_frame)
-    ctr_img = contourtracker.draw_countours(curr_frame, frame)
-    cv2.imwrite(f'./vid/frames/frame_{frame}.png', ctr_img)
-    # cv2.waitKey(0)
+if not framebuffer.isOpened():
+    print('Failed to open video file again')
+
+while framebuffer.isOpened():
+    frame += 1;
+    _ret, curr_frame = framebuffer.read()
+
+    if not _ret:
+        print('Reached end of file')
+        break
+
+    img = contourtracker.draw_countours(curr_frame, frame)
+
+    cv2.imwrite(f'/vid/frames/frame_{frame}.png', curr_frame)

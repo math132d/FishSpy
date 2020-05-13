@@ -54,12 +54,14 @@ class TimeContour():
         return center(self.contours[self.recent])
 
     def draw(self, image, time):
-        if time in self.contours.keys():
-            x, y, w, h = cv2.boundingRect(self.contours[time])
-            img = cv2.rectangle(image, (x, y), (x+w, y+h), (0,0,255), 1)
-            return cv2.putText(img, str(self.id), (x+w, y), cv2.FONT_HERSHEY_SIMPLEX, 0.2, (255,255,255))
-        else:
-            return image
+        safe_time = time
+
+        while safe_time not in self.contours.keys():
+            safe_time-=1
+
+        x, y, w, h = cv2.boundingRect(self.contours[safe_time])
+        img = cv2.rectangle(image, (x, y), (x+w, y+h), (0,0,255), 1)
+        return cv2.putText(img, str(self.id), (x+w, y), cv2.FONT_HERSHEY_SIMPLEX, 0.2, (255,255,255))
 
     def add(self, contour, time):
         self.contours[time] = contour
