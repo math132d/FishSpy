@@ -19,7 +19,7 @@ class ContourTracker():
         closest_contour = (None, 1000)
 
         for contour in self.contours:
-            if not contour.is_dead(time):
+            if not (contour.is_dead(time) and contour.recent != time):
                 distance = euclid_dist( center(contour.get_recent()), center(new_contour) )
 
                 if (distance < closest_contour[1] and
@@ -63,8 +63,14 @@ class TimeContour():
 
     def draw(self, image, scale, time):
         x, y, w, h = cv2.boundingRect(self.get_closest(time))
-        img = cv2.rectangle(image, (x, y), (x+w, y+h), (0,0,255), 1)
-        return cv2.putText(img, str(self.id), (x+w, y), cv2.FONT_HERSHEY_SIMPLEX, 0.2, (255,255,255))
+
+        x = math.floor(x * scale[0])
+        y = math.floor(y * scale[1])
+        w = math.floor(w * scale[0])
+        h = math.floor(h * scale[1])
+        
+        img = cv2.rectangle( image, (x, y), (x+w, y+h), (0,0,255), 1 )
+        return cv2.putText(img, str(self.id), (x+w, y), cv2.FONT_HERSHEY_SIMPLEX, 0.25*scale[1], (255,255,255))
 
     def add(self, contour, time):
         self.contours[time] = contour
