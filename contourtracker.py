@@ -6,7 +6,7 @@ def euclid_dist(a, b):
 
 def center(contour):
     x, y, w, h = cv2.boundingRect(contour)
-    return [x + w/2, y + h/2]
+    return (x + w/2, y + h/2)
 
 class ContourTracker():
     def __init__(self, proximity_thresh, time_thresh, min_duration):
@@ -20,7 +20,7 @@ class ContourTracker():
 
         for contour in self.contours:
             if not contour.is_dead(time):
-                distance = euclid_dist( contour.get_recent_center(), center(new_contour) )
+                distance = euclid_dist( center(contour.get_recent()), center(new_contour) )
 
                 if (distance < closest_contour[1] and
                     time-contour.recent <= self.time_thresh):
@@ -33,10 +33,10 @@ class ContourTracker():
         else:
             self.contours.append(TimeContour(len(self.contours), new_contour, time, self))
 
-    def draw_countours(self, image, time):
+    def draw_countours(self, image, scale, time):
         for contour in self.contours:
             if contour.start <= time and contour.recent >= time:
-                image = contour.draw(image, time)
+                image = contour.draw(image, scale, time)
         return image
 
 class TimeContour():
@@ -50,16 +50,19 @@ class TimeContour():
     def is_dead(self, frame):
         return frame-self.recent > self.parent.time_thresh and self.recent-self.start < self.parent.min_duration
 
-    def get_recent_center(self):
-        return center(self.contours[self.recent])
+    def get_recent(self):
+        return self.contours[self.recent]
 
-    def draw(self, image, time):
+    def get_closest(self, time):
         safe_time = time
 
         while safe_time not in self.contours.keys():
             safe_time-=1
 
-        x, y, w, h = cv2.boundingRect(self.contours[safe_time])
+        return self.contours[safe_time]
+
+    def draw(self, image, scale, time):
+        x, y, w, h = cv2.boundingRect(self.get_closest(time))
         img = cv2.rectangle(image, (x, y), (x+w, y+h), (0,0,255), 1)
         return cv2.putText(img, str(self.id), (x+w, y), cv2.FONT_HERSHEY_SIMPLEX, 0.2, (255,255,255))
 
