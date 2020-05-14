@@ -6,7 +6,7 @@ from contourtracker import ContourTracker
 
 path = './vid/small.mp4'
 bg_subtractor = cv2.createBackgroundSubtractorMOG2(history=750)
-contourtracker = ContourTracker(25, 3, 10)
+contourtracker = ContourTracker(10, 3, 25)
 
 framebuffer = cv2.VideoCapture(path)
 
@@ -55,4 +55,4 @@ while framebuffer.isOpened():
 
     img = contourtracker.draw_countours(curr_frame, frame)
 
-    cv2.imwrite(f'/vid/frames/frame_{frame}.png', curr_frame)
+    cv2.imwrite(f'./vid/frames/frame_{frame}.png', curr_frame)
