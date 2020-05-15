@@ -1,4 +1,3 @@
 /__pycache__
-/vid/*.mp4
-/vid/frames/*
+/vid/
 /history/
