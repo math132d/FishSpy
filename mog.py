@@ -32,7 +32,7 @@ def get_tracked_contours(in_path, space_grouping_threshold=10, time_grouping_thr
         _, fg = cv2.threshold(fg, 0, 255, cv2.THRESH_BINARY)
         fg = cv2.dilate(fg, kernel_sm, iterations=4)
 
-        contours, _ = cv2.findContours(fg, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE);
+        contours, _ = cv2.findContours(fg, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE);
 
         for contour in contours:
             contourtracker.add_contour(contour, frame)
