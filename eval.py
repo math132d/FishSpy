@@ -13,8 +13,6 @@ def evaluate_iou(ground_truth, inferred, threshold):
                 tp += 1
                 break
         
-        print(iou)
-        
         if iou == 0:
             fp += 1
 

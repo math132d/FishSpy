@@ -8,7 +8,7 @@ from contourtracker import ContourTracker
 def get_tracked_contours(in_path, space_grouping_threshold=10, time_grouping_threshold=3, min_duration=10, history=750):
     #Function returns a contourtracker object which contains a list of TimeCountours (tracked contours)
 
-    contourtracker = ContourTracker(time_grouping_threshold, time_grouping_threshold, min_duration)
+    contourtracker = ContourTracker(space_grouping_threshold, time_grouping_threshold, min_duration)
     bg_subtractor = cv2.createBackgroundSubtractorMOG2(history=history)
     framebuffer = cv2.VideoCapture(in_path)
     kernel_sm = np.ones((3,3), np.uint8)
